@@ -1,8 +1,8 @@
 <?php
 /**
-* 
 * Classe de Rastreamento de Pedidos dos Correios. PHP + SOAP
-*
+* ----------------------------------------------------------
+* 
 * Esta é uma classe estatica simples criada com intuito de rastrear objetos dos correios 
 * Utilizando para isso PHP e a API SOAP fornecida pelo sistema dos Correios.
 * Fique a vontade para usar como desejar, em vosso sistema, seja 
@@ -12,10 +12,11 @@
 * funcionamento da API fornecida pelos correios.
 * 
 * Para mais detalhes verifique a documentação fornecida pelos Correios:
-* @link - http://www.correios.com.br/para-voce/correios-de-a-a-z/pdf/rastreamento-de-objetos/Manual_RastreamentoObjetosWS.pdf
+* @link - http://sooho.com.br/resources/Manual_RastreamentoObjetosWS.pdf
 *
 * @since - 2016.08.21 22:45
 * @author Wanderlei Santana <sans.pds@gmail.com>
+* @version 201705092234 - revisão
 */
 class Rastrear
 {
@@ -132,6 +133,9 @@ class Rastrear
         if( is_null( $__codigo__ ) )
             return self::erro( "Nenhum código de rastreamento recebido." );
 
+        if( ! self::soapExists() )
+            return self::erro( "Parece que o Modulo SOAP não esta ativo em seu servidor." );
+
         $_evento = array(
             'usuario'   => self::$user,
             'senha'     => self::$pass,
@@ -145,12 +149,25 @@ class Rastrear
         $eventos = $client->buscaEventos( $_evento );
 
         // sempre retorna objeto por padrao, mesmo em caso de erros.
-        return $eventos->return->objeto;
+        return ($eventos->return->qtd == 1) ? 
+        	$eventos->return->objeto:
+        	$eventos->return;
+    }
+
+    /**
+     * Verifica se o Modulo SOAP esta ativo 
+     * no servidor do usuario e funcionando.
+     * 
+     * @return bool - true se tudo ok
+     */
+    private static function soapExists() {
+		return extension_loaded('soap') && class_exists("SOAPClient") ;
     }
 
     /**
      * Metodo para retorno de erros no formato de objetos 
      * para manter o padrao de retorno.
+     * 
      * @param  string $__mensagem - Mensagem de erro a ser retornado
      * @return stdClass Object
      */
