@@ -39,6 +39,14 @@ echo "CATEGORIA: " . $obj -> categoria . "<br>" ;
 ### Visualizando eventos do Objeto
 Note que as informações sobre "Detalhes" e "Destino" nem sempre são retornados. Portanto, é importante verificar se os mesmos estão definidos antes de usálos.
 ```php
+// CORREÇÂO: Caso objeto rastreado possua apenas 1 evento, 
+// Correios retorna o evento dentro de um Object e não um Array.
+if( is_object($obj->evento) ):
+    $tmp = Array();
+    $tmp[] = $obj->evento ;
+    $obj->evento = $tmp;
+endif;
+
 foreach( $obj -> evento as $ev ):
 
     echo "TIPO: "   . $ev -> tipo   . "<br>" ;
