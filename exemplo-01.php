@@ -31,6 +31,14 @@ echo "SIGLA: "     . $obj -> sigla . "<br>" ;
 echo "NOME: "      . $obj -> nome . "<br>" ;
 echo "CATEGORIA: " . $obj -> categoria . "<br>" ;
 
+// NOTA: Caso objeto rastreado possua apenas 1 evento, 
+// Correios retorna o evento dentro de um Object e não um Array.
+if( is_object($obj->evento) ):
+    $tmp = Array();
+    $tmp[] = $obj->evento ;
+    $obj->evento = $tmp;
+endif;
+
 # percorrendo os eventos ocorridos com o objeto
 foreach( $obj -> evento as $ev ):
 
